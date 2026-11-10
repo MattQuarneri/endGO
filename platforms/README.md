@@ -14,9 +14,14 @@ Choose your platform and follow the README in that directory.
 ### Cloudflare Workers
 
 ```bash
-cd platforms/cloudflare
-npm install -g wrangler
+cd /path/to/endGO
+npm install
 npm run build
+cd platforms/cloudflare
+npm install
+npm run check
+npm run bundle
+npx wrangler login
 npm run deploy
 ```
 
@@ -36,18 +41,9 @@ npm run deploy
 | **Config Format** | `wrangler.toml` | `fastly.toml` |
 | **KV Storage** | `KVNamespace` | `Dictionary` |
 | **Environment** | Worker environment | Compute@Edge |
-| **Deploy Command** | `wrangler publish` | `fastly compute deploy` |
+| **Deploy Command** | `wrangler deploy` | `fastly compute deploy` |
 | **TypeScript** | Via wrangler build | Via rollup/esbuild |
 
 ## Adding Your App
 
-Each platform directory contains a starter `src/index.ts`. Replace it with your endGO application or import it from your main project.
-
-To use from your main endGO project:
-
-```ts
-// platforms/cloudflare/src/index.ts
-import app from '../../src/endGO';
-
-export default app;
-```
+Each platform directory contains a starter `src/index.ts`. Edit that file to add your endpoints and middleware. The Cloudflare starter imports the local endGO package from this checkout; after v1 is published, switch its dependency to the published version.

@@ -1,94 +1,26 @@
-# Cloudflare Workers Deployment
+# Cloudflare Workers starter
 
-Deploy your endGO app to Cloudflare Workers in minutes.
+This starter uses the endGO package from this checkout and Wrangler 4 (Node.js 22.12+). From the repository root, build endGO first:
 
-## Prerequisites
-
-- Node.js 18+
-- A Cloudflare account (free tier works)
-- `wrangler` CLI
-
-## Setup
-
-1. **Install dependencies:**
-   ```bash
-   npm install
-   ```
-
-2. **Authenticate with Cloudflare:**
-   ```bash
-   npx wrangler login
-   ```
-
-3. **Update `wrangler.toml`:**
-   - Change `name` to your project name
-   - Set your `account_id` and `zone_id` (from Cloudflare dashboard)
-   - Add any KV bindings or environment variables
-
-## Development
-
-```bash
-# Run local development server
-npm run dev
-
-# Type-check
+```sh
+npm install
+npm run build
+cd platforms/cloudflare
+npm install
 npm run check
+npm run bundle
+npm run dev
 ```
 
-## Deployment
+In another terminal, verify the local Worker:
 
-```bash
-# Build and deploy to Cloudflare
-npm run deploy
-
-# Deploy with a custom message
-wrangler publish --message "Production v1.0"
+```sh
+curl http://localhost:8787/health
+curl http://localhost:8787/api/hello
+curl -X POST http://localhost:8787/api/echo \
+  -H 'Content-Type: application/json' -d '{"message":"hi"}'
 ```
 
-## Environment Variables & Secrets
+`/api/hello` reads `GREETING` from the Wrangler variable in `wrangler.toml`. Change that value to see how Worker bindings reach `server.env` for each request. Add KV, D1, or other bindings to `wrangler.toml` and the `Env` type as needed.
 
-Add to `wrangler.toml`:
-
-```toml
-[env.production]
-vars = { API_BASE = "https://api.example.com" }
-
-[[env.production.kv_namespaces]]
-binding = "TASK_KV"
-id = "your-kv-namespace-id"
-```
-
-Access in your app:
-
-```ts
-app.end('/tasks', async ({ server }) => {
-  const kv = server.env.TASK_KV;
-  // Use KV API
-  server.reply(200, { ok: true });
-});
-```
-
-## Monitoring
-
-View logs:
-
-```bash
-wrangler tail
-```
-
-View in Cloudflare dashboard:
-- Workers → Your Worker → Logs
-- Analytics for request metrics
-
-## Routing
-
-Set up routes in `wrangler.toml`:
-
-```toml
-routes = [
-  { pattern = "api.example.com/*", zone_name = "example.com" },
-  { pattern = "api.staging.example.com/*", zone_name = "example.com" }
-]
-```
-
-Or deploy as a custom domain at `https://your-project.workers.dev`.
+After publishing endGO v1, replace `"endgo": "file:../.."` in this starter's `package.json` with the published version. To deploy, authenticate with `npx wrangler login`, then run `npm run deploy`. Deployment publishes a Worker to your Cloudflare account; the local checks above do not.

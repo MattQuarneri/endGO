@@ -5,6 +5,7 @@
   "description": "Zero-dependency, IoC-driven Web Standard framework for Cloudflare Workers, Bun, Deno, and Node.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "files": ["dist", "README.md", "LICENSE"],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -26,6 +27,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "check": "tsc -p tsconfig.json --noEmit",
+    "smoke:package": "node examples/package-consumer/verify.mjs",
     "test": "bun test"
   },
   "devDependencies": {

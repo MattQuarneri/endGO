@@ -1,10 +1,7 @@
 import { endGO } from 'endgo';
 
 type Env = {
-  // Add your Cloudflare bindings here
-  // Example:
-  // CACHE: KVNamespace;
-  // API_SECRET: string;
+  GREETING: string;
 };
 
 const app = new endGO<Env>();
@@ -25,6 +22,11 @@ app.mid('*', async (ctx, next) => {
 // Health check endpoint
 app.end('/health', ({ server }) =>
   server.reply(200, { status: 'ok', platform: 'cloudflare-workers' })
+);
+
+// The Worker passes Wrangler bindings into endGO's per-request server.env.
+app.end('/api/hello', ({ server }) =>
+  server.reply(200, { message: server.env.GREETING })
 );
 
 // Example API endpoint

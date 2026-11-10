@@ -4,7 +4,7 @@ Choose your platform and deploy in **less than 5 minutes**.
 
 ## Prerequisites
 
-- Node.js 18+
+- Node.js 22.12+ for the Cloudflare starter
 - A terminal
 - 5 minutes
 
@@ -13,20 +13,24 @@ Choose your platform and deploy in **less than 5 minutes**.
 **Why:** Free tier, instant global deployment, zero setup
 
 ```bash
-# 1. Navigate to Cloudflare platform
-cd /path/to/endGO/platforms/cloudflare
+# 1. Build the local endGO package
+cd /path/to/endGO
+npm install
+npm run build
 
-# 2. Install dependencies
+# 2. Navigate to the Cloudflare starter and install dependencies
+cd /path/to/endGO/platforms/cloudflare
 npm install
 
-# 3. Authenticate (opens browser)
+# 3. Check the source and bundle locally
+npm run check
+npm run bundle
+
+# 4. Authenticate (opens browser)
 npx wrangler login
 
-# 4. Deploy (30 seconds)
+# 5. Deploy
 npm run deploy
-
-# 5. Done! ✅
-# Your app is live at: https://endgo-cloudflare-app.workers.dev
 ```
 
 **Customize:**
@@ -34,10 +38,7 @@ npm run deploy
 - Edit `wrangler.toml` to rename your worker
 - Redeploy: `npm run deploy`
 
-**Next Steps:**
-- [Cloudflare KV Tutorial](./cloudflare/README.md#environment-variables--secrets)
-- [Add environment variables](./cloudflare/README.md#environment-variables--secrets)
-- [Set up custom domain](./cloudflare/README.md#routing)
+**Next Steps:** See the [Cloudflare starter](./cloudflare/README.md) for local endpoint checks and bindings.
 
 ---
 

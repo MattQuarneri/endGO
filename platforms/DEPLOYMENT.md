@@ -5,8 +5,13 @@ This guide shows how to get your endGO app running on any platform in under 5 mi
 ## Cloudflare Workers
 
 ```bash
+cd /path/to/endGO
+npm install
+npm run build
 cd platforms/cloudflare
 npm install
+npm run check
+npm run bundle
 npx wrangler login
 npm run deploy
 ```

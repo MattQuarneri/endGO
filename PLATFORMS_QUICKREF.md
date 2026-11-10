@@ -5,15 +5,19 @@
 A complete deployment infrastructure for Cloudflare Workers and Fastly Compute, including:
 - **Configuration files** (wrangler.toml, fastly.toml)
 - **Example applications** (TypeScript/JavaScript)
-- **CI/CD workflows** (auto-deploy on git push)
 - **Comprehensive documentation** (guides, comparisons, tutorials)
 
 ## 🚀 Deploy in 5 Minutes
 
 ### Cloudflare Workers
 ```bash
+cd /path/to/endGO
+npm install
+npm run build
 cd platforms/cloudflare
 npm install
+npm run check
+npm run bundle
 npx wrangler login
 npm run deploy
 ```
@@ -41,21 +45,18 @@ npm run deploy
 
 - [ ] Edit `wrangler.toml` (Cloudflare) or `fastly.toml` (Fastly)
   - [ ] Change app name
-  - [ ] Add account ID / service ID
+- [ ] Configure the deployment account or service
   - [ ] Configure environment variables
 - [ ] Edit `src/index.ts`
   - [ ] Replace example endpoints with your app
-- [ ] Set GitHub secrets (for CI/CD auto-deploy)
-  - [ ] `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID` (CF)
-  - [ ] `FASTLY_API_TOKEN` + `FASTLY_SERVICE_ID` (Fastly)
 
 ## ⚡ npm Scripts
 
 ```bash
 npm run dev          # Local development server
 npm run check        # TypeScript type checking
-npm run build        # Compile TypeScript
-npm run deploy       # Build and deploy to platform
+npm run bundle       # Cloudflare dry-run bundle
+npm run deploy       # Deploy to platform
 ```
 
 ## 💡 Platform Comparison
@@ -118,7 +119,7 @@ npm run deploy
 | "Service not found" | Check FASTLY_SERVICE_ID environment variable |
 | TypeScript errors | Run `npm run check` to see all errors |
 | Port already in use | Stop other dev servers or use different port |
-| Changes not live | Rebuild: `npm run build && npm run deploy` |
+| Changes not live | Run `npm run deploy` again; Cloudflare bundles the source |
 
 ## 📖 Learning Path
 

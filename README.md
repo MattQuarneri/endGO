@@ -89,6 +89,7 @@ export default app;
 ## Runtime Adapters
 
 For session authentication middleware, see the runnable [Better Auth example](./examples/better-auth/README.md).
+Before publishing, run the [package consumer smoke demo](./examples/package-consumer/README.md) against a packed tarball.
 
 ### Cloudflare Workers / Fastly Compute / Deno
 `app.fetch` is bound as an arrow property, so `export default app` (or `Deno.serve(app.fetch)`) preserves `this` and isolates per-request `env` and `ExecutionContext`.
