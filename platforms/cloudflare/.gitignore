@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.wrangler/
+*.tsbuildinfo
+.DS_Store
+.env
+.env.local
+wrangler-docs.html

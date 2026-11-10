@@ -1,0 +1,20 @@
+{
+  "name": "endgo-fastly",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "endGO application deployed to Fastly Compute@Edge",
+  "main": "./dist/index.js",
+  "scripts": {
+    "dev": "fastly compute serve",
+    "build": "tsc -p tsconfig.json",
+    "deploy": "npm run build && fastly compute deploy",
+    "check": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "endgo": "^0.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.9.3"
+  }
+}

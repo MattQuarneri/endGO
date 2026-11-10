@@ -1,0 +1,70 @@
+{
+  "platforms": {
+    "description": "Platform-specific deployment configurations for endGO",
+    "documentation": {
+      "GETTING_STARTED.md": "5-minute deployment guide for all platforms",
+      "README.md": "Platform directory overview and quick-start links",
+      "DEPLOYMENT.md": "Detailed deployment instructions and troubleshooting",
+      "PLATFORM_COMPARISON.md": "Feature matrix, decision tree, and cost analysis"
+    },
+    "cloudflare": {
+      "description": "Cloudflare Workers deployment",
+      "files": {
+        "wrangler.toml": "Configuration file (customize: name, account_id, zone_id)",
+        "package.json": "Dependencies and build scripts",
+        "src/index.ts": "Application entry point (customize with your app)",
+        "tsconfig.json": "TypeScript configuration",
+        ".github/workflows/deploy.yml": "CI/CD pipeline for auto-deploy",
+        "README.md": "Cloudflare Workers specific guide",
+        ".gitignore": "Git ignore rules"
+      },
+      "quick_start": [
+        "npm install",
+        "npx wrangler login",
+        "npm run deploy"
+      ],
+      "dev_server": "npm run dev (http://localhost:8787)",
+      "cost": "$0.50/10M requests (free tier: 100k/day)"
+    },
+    "fastly": {
+      "description": "Fastly Compute@Edge deployment",
+      "files": {
+        "fastly.toml": "Configuration file (customize: name, backends, dictionaries)",
+        "package.json": "Dependencies and build scripts",
+        "src/index.ts": "Application entry point (customize with your app)",
+        "tsconfig.json": "TypeScript configuration",
+        ".github/workflows/deploy.yml": "CI/CD pipeline for auto-deploy",
+        "README.md": "Fastly Compute specific guide",
+        ".gitignore": "Git ignore rules"
+      },
+      "quick_start": [
+        "npm install",
+        "fastly auth",
+        "npm run deploy"
+      ],
+      "dev_server": "npm run dev (http://localhost:7676)",
+      "cost": "$0.12/1M requests (no free tier)"
+    }
+  },
+  "usage": {
+    "new_users": [
+      "1. Read GETTING_STARTED.md",
+      "2. Choose Cloudflare or Fastly",
+      "3. Run: npm run deploy",
+      "4. Your app is live ✅"
+    ],
+    "existing_projects": [
+      "1. Copy platforms/cloudflare or platforms/fastly",
+      "2. Replace src/index.ts with your app",
+      "3. Configure environment variables",
+      "4. Run: npm run deploy"
+    ]
+  },
+  "features": {
+    "production_ready": "TypeScript support, build optimization, CI/CD included",
+    "zero_vendor_lock_in": "Identical endGO code for all platforms",
+    "comprehensive_docs": "Platform guides, comparisons, cost analysis",
+    "local_development": "Full local dev support with npm run dev"
+  },
+  "main_readme": "See ../../README.md for updated platform references"
+}

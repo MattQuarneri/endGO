@@ -1,0 +1,39 @@
+name = "endgo-cloudflare-app"
+type = "service"
+main = "src/index.ts"
+compatibility_date = "2024-12-01"
+
+# Account settings - update with your values
+account_id = ""
+zone_id = ""
+
+# Environment-specific settings
+[env.production]
+route = "api.example.com/*"
+zone_id = ""
+
+[env.staging]
+route = "api.staging.example.com/*"
+zone_id = ""
+
+# Example KV namespace binding
+# [[kv_namespaces]]
+# binding = "CACHE"
+# id = "your-kv-namespace-id"
+# preview_id = "your-preview-kv-namespace-id"
+
+# Example environment variables
+[env.production]
+vars = { ENVIRONMENT = "production" }
+
+[env.staging]
+vars = { ENVIRONMENT = "staging" }
+
+# Build configuration
+[build]
+command = "npm run build"
+cwd = "."
+
+# Minify production builds
+[build.upload]
+format = "service-worker"

@@ -1,0 +1,34 @@
+{
+  "name": "endgo",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Zero-dependency, IoC-driven Web Standard framework for Cloudflare Workers, Bun, Deno, and Node.",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./routers": {
+      "types": "./dist/routers/index.d.ts",
+      "import": "./dist/routers/index.js"
+    },
+    "./adapters/bun": {
+      "types": "./dist/adapters/bun.d.ts",
+      "import": "./dist/adapters/bun.js"
+    },
+    "./adapters/node": {
+      "types": "./dist/adapters/node.d.ts",
+      "import": "./dist/adapters/node.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "check": "tsc -p tsconfig.json --noEmit",
+    "test": "bun test"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,0 +1,33 @@
+name = "endgo-fastly-app"
+description = "endGO application deployed to Fastly Compute@Edge"
+language = "javascript"
+authors = ["you@example.com"]
+
+[build]
+# Backends (origins) your Compute@Edge service can talk to
+backends = [
+  # Example:
+  # { name = "api_origin", address = "api.example.com", port = 443 }
+]
+
+# Dictionary stores for configuration and key-value storage
+# [[dictionaries]]
+# name = "config"
+# file = "dictionaries/config.json"
+
+# Uncomment to enable secrets management
+# [env.production]
+# secrets_stores = ["my-secrets"]
+
+[env.production]
+name = "production"
+# backends = [...]
+# Add production-specific configuration
+
+[env.staging]
+name = "staging"
+# backends = [...]
+# Add staging-specific configuration
+
+# Source path
+source = "src/index.js"
