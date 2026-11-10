@@ -30,4 +30,4 @@ name = "staging"
 # Add staging-specific configuration
 
 # Source path
-source = "src/index.js"
+source = "dist/index.js"

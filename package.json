@@ -1,8 +1,8 @@
 {
   "name": "endgo",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "type": "module",
-  "description": "Zero-dependency, IoC-driven Web Standard framework for Cloudflare Workers, Bun, Deno, and Node.",
+  "description": "Zero-dependency, IoC-driven Web Standard endpointframework for Cloudflare Workers, Fastly, Bun, Deno, and Node.",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": ["dist", "README.md", "LICENSE"],
