@@ -1,0 +1,17 @@
+{
+  "name": "endgo-better-auth-demo",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node --experimental-strip-types index.ts",
+    "test": "node --experimental-strip-types --test integration.ts",
+    "check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "better-auth": "^1.7.7"
+  },
+  "devDependencies": {
+    "@types/node": "^26.0.0",
+    "typescript": "^5.9.3"
+  }
+}
