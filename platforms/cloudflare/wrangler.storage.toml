@@ -1,0 +1,9 @@
+name = "endgo-portable-storage"
+main = "../../examples/portable-storage/worker.ts"
+compatibility_date = "2026-11-10"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "endgo-portable-storage"
+# Local Wrangler uses this ID for its own storage. Use the deployed D1 ID for production.
+database_id = "00000000-0000-0000-0000-000000000001"

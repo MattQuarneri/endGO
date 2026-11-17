@@ -15,9 +15,21 @@
       "types": "./dist/routers/index.d.ts",
       "import": "./dist/routers/index.js"
     },
+    "./cloudC": {
+      "types": "./dist/cloudC.d.ts",
+      "import": "./dist/cloudC.js"
+    },
     "./adapters/bun": {
       "types": "./dist/adapters/bun.d.ts",
       "import": "./dist/adapters/bun.js"
+    },
+    "./adapters/cloudflare": {
+      "types": "./dist/adapters/cloudflare.d.ts",
+      "import": "./dist/adapters/cloudflare.js"
+    },
+    "./adapters/landcloud": {
+      "types": "./dist/adapters/landcloud.d.ts",
+      "import": "./dist/adapters/landcloud.js"
     },
     "./adapters/node": {
       "types": "./dist/adapters/node.d.ts",
@@ -27,6 +39,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "check": "tsc -p tsconfig.json --noEmit",
+    "dev:storage": "bun examples/portable-storage/local.ts",
     "smoke:package": "node examples/package-consumer/verify.mjs",
     "test": "bun test"
   },

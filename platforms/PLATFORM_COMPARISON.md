@@ -4,6 +4,8 @@ Choose the right platform for your endGO application.
 
 ## Feature Comparison
 
+This table describes platform capabilities. The current endGO adapters expose HTTP. On Bun and Cloudflare Workers, an application can handle WebSocket upgrades in its runtime entry point. The shared endGO WebSocket adapter is tracked in the [gateway development plan](../docs/gateway-development-plan.md#portable-websockets).
+
 | Feature | Cloudflare | Fastly | Bun | Node.js | Deno |
 |---------|-----------|--------|-----|---------|------|
 | **Cold Start** | <10ms | <5ms | 50-100ms | 50-100ms | 50-100ms |

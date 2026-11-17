@@ -148,3 +148,11 @@ vite.config.ts.timestamp-*
 
 # Turbo Repo
 .turbo
+
+
+# Notes
+cloud.brainstorm.md
+cloudC.plan.md
+gateway-development-plan.md
+docs/Why endGO.md
+docs/Making endGO a real Hono alternative.md

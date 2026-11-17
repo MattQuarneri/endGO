@@ -5,6 +5,8 @@
   "description": "endGO application deployed to Cloudflare Workers",
   "scripts": {
     "dev": "wrangler dev",
+    "dev:storage": "wrangler dev --config wrangler.storage.toml --local --var ENDGO_STORAGE_TOKEN:local-demo",
+    "db:storage:local": "wrangler d1 execute DB --config wrangler.storage.toml --local --file ../../src/adapters/cloudflare.sql",
     "deploy": "wrangler deploy",
     "check": "tsc -p tsconfig.json --noEmit",
     "bundle": "wrangler deploy --dry-run --outdir dist"
