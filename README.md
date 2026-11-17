@@ -1,4 +1,4 @@
-# endGO: Endpoint Oriented HTTP Microservices Framework
+# endGO: the endpoint oriented API framework
 
 Zero-dependency, IoC-driven Web Standard HTTP serving framework for Cloudflare Workers, Fastly Compute, Bun, Deno, and Node.js.
 
