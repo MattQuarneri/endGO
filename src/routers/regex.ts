@@ -1,5 +1,10 @@
 import type { endGOHandler, IRouter, RouteMatch } from '../types.js';
-import { normalizePath, resolveVerb, splitSegments } from './shared.js';
+import {
+  decodeParam,
+  normalizePath,
+  resolveVerb,
+  splitSegments,
+} from './shared.js';
 
 interface RegExRouteEntry<THandler> {
   pattern: RegExp;
@@ -81,7 +86,9 @@ export class RegExRouter<THandler = endGOHandler<any>> implements IRouter<THandl
 
       const params: Record<string, string> = {};
       for (let i = 0; i < entry.paramNames.length; i++) {
-        params[entry.paramNames[i]] = exec[i + 1] ?? '';
+        const name = entry.paramNames[i];
+        const rawValue = exec[i + 1] ?? '';
+        params[name] = name === '*' ? rawValue : decodeParam(rawValue);
       }
 
       const { handler, allowedMethods } = resolveVerb(entry.payload, method);

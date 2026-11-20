@@ -1,4 +1,4 @@
-import type { endGOConfig, endGOCorsConfig } from './types.js';
+import type { endGOConfig, endGOCorsConfig, ReplyHeaders } from './types.js';
 
 function buildCorsEntries(cors: endGOCorsConfig): Array<[string, string]> {
   const entries: Array<[string, string]> = [];
@@ -40,18 +40,45 @@ function isBinaryOrStreamBody(payload: unknown): payload is BodyInit {
   );
 }
 
+function applyHeaders(target: Headers, headers: ReplyHeaders): void {
+  if (headers instanceof Headers) {
+    const setCookies =
+      typeof headers.getSetCookie === 'function' ? headers.getSetCookie() : [];
+    headers.forEach((value, name) => {
+      if (name.toLowerCase() === 'set-cookie' && setCookies.length > 0) {
+        return;
+      }
+      target.set(name, value);
+    });
+    for (const cookie of setCookies) {
+      target.append('Set-Cookie', cookie);
+    }
+    return;
+  }
+
+  for (const [name, value] of Object.entries(headers)) {
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        target.append(name, item);
+      }
+    } else {
+      target.set(name, value);
+    }
+  }
+}
+
 /**
  * Creates a standardized Web Response builder applying safe defaults and configured CORS headers.
  */
 export function createReply(
   config?: endGOConfig
-): (status: number, payload?: unknown, headers?: Record<string, string>) => Response {
+): (status: number, payload?: unknown, headers?: ReplyHeaders) => Response {
   const corsEntries = config?.cors ? buildCorsEntries(config.cors) : [];
 
   return (
     status: number,
     payload?: unknown,
-    headers?: Record<string, string>
+    headers?: ReplyHeaders
   ): Response => {
     if (payload instanceof Response) {
       const merged = new Headers(payload.headers);
@@ -65,9 +92,7 @@ export function createReply(
         }
       }
       if (headers) {
-        for (const [name, value] of Object.entries(headers)) {
-          merged.set(name, value);
-        }
+        applyHeaders(merged, headers);
       }
       return new Response(payload.body, {
         status: payload.status,
@@ -99,9 +124,7 @@ export function createReply(
     }
 
     if (headers) {
-      for (const [name, value] of Object.entries(headers)) {
-        responseHeaders.set(name, value);
-      }
+      applyHeaders(responseHeaders, headers);
     }
 
     return new Response(body, {

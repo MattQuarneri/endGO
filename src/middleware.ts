@@ -87,6 +87,7 @@ export function composePipeline<
   TUser = unknown,
   TTenant = unknown,
   TSession = unknown,
+  TServices = Record<string, unknown>,
   TRouter = IRouter<any>,
   TResolver = PathResolver
 >(
@@ -97,6 +98,7 @@ export function composePipeline<
     TUser,
     TTenant,
     TSession,
+    TServices,
     TRouter,
     TResolver
   >[],
@@ -107,6 +109,7 @@ export function composePipeline<
     TUser,
     TTenant,
     TSession,
+    TServices,
     TRouter,
     TResolver
   >,

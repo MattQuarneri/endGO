@@ -40,6 +40,33 @@ export function splitSegments(normalizedPath: string): string[] {
 }
 
 /**
+ * Safely decodes a URL-encoded route parameter segment, falling back to the
+ * raw segment if the percent-encoding is malformed.
+ */
+export function decodeParam(value: string): string {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
+/**
+ * Joins a route prefix and a relative path into a normalized path.
+ */
+export function joinPaths(prefix: string, path: string): string {
+  const normalizedPrefix = normalizePath(prefix);
+  const normalizedPath = normalizePath(path);
+  if (normalizedPrefix === '/') {
+    return normalizedPath;
+  }
+  if (normalizedPath === '/') {
+    return normalizedPrefix;
+  }
+  return `${normalizedPrefix}${normalizedPath}`;
+}
+
+/**
  * Resolves the effective handler and allowed HTTP methods for a given route payload and method.
  */
 export function resolveVerb<THandler>(

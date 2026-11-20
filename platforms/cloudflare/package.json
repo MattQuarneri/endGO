@@ -9,7 +9,8 @@
     "db:storage:local": "wrangler d1 execute DB --config wrangler.storage.toml --local --file ../../src/adapters/cloudflare.sql",
     "deploy": "wrangler deploy",
     "check": "tsc -p tsconfig.json --noEmit",
-    "bundle": "wrangler deploy --dry-run --outdir dist"
+    "bundle": "wrangler deploy --dry-run --outdir dist",
+    "test:worker": "node test-worker.mjs"
   },
   "dependencies": {
     "endgo": "file:../.."

@@ -155,6 +155,43 @@ export type endGOEventName = 'startup' | 'shutdown' | 'error';
 export type endGOEventListener = (payload?: unknown) => void | Promise<void>;
 
 /**
+ * Extracts `:param` segment names from a literal route path string.
+ */
+type ExtractParamNames<Path extends string> = string extends Path
+  ? never
+  : Path extends `${string}:${infer Param}/${infer Rest}`
+    ? Param | ExtractParamNames<Rest>
+    : Path extends `${string}:${infer Param}`
+      ? Param
+      : never;
+
+/**
+ * Checks whether a literal route path contains a `*` wildcard segment.
+ */
+type HasWildcard<Path extends string> = string extends Path
+  ? false
+  : Path extends `${string}*${string}`
+    ? true
+    : false;
+
+/**
+ * Infers a typed route parameter record from a literal path pattern
+ * (e.g. `'/users/:id/posts/:postId'` -> `{ id: string; postId: string }`),
+ * falling back to `Record<string, string>` when `Path` is a non-literal `string`.
+ */
+export type ExtractParams<Path extends string> = string extends Path
+  ? Record<string, string>
+  : {
+      [K in ExtractParamNames<Path> | (HasWildcard<Path> extends true ? '*' : never)]: string;
+    };
+
+/**
+ * Headers accepted by {@link ServerContext.reply} and `createReply`,
+ * supporting repeated header values (such as multiple `Set-Cookie` headers).
+ */
+export type ReplyHeaders = Record<string, string | string[]> | Headers;
+
+/**
  * Execution context passed to middleware.
  * Exposes a mutable `requestor` reference so trusted middleware can swap in a new immutable snapshot.
  */
@@ -165,12 +202,13 @@ export interface MiddlewareContext<
   TUser = unknown,
   TTenant = unknown,
   TSession = unknown,
+  TServices = Record<string, unknown>,
   TRouter = IRouter<any>,
   TResolver = PathResolver
 > {
   readonly request: endGORequest<TParams, TQuery>;
   requestor: Requestor<TUser, TTenant, TSession>;
-  readonly server: ServerContext<TEnv, TRouter, TResolver>;
+  readonly server: ServerContext<TEnv, TServices, TRouter, TResolver>;
 }
 
 /**
@@ -183,12 +221,13 @@ export interface HandlerContext<
   TUser = unknown,
   TTenant = unknown,
   TSession = unknown,
+  TServices = Record<string, unknown>,
   TRouter = IRouter<any>,
   TResolver = PathResolver
 > {
   readonly request: endGORequest<TParams, TQuery>;
   readonly requestor: Requestor<TUser, TTenant, TSession>;
-  readonly server: ServerContext<TEnv, TRouter, TResolver>;
+  readonly server: ServerContext<TEnv, TServices, TRouter, TResolver>;
 }
 
 /**
@@ -206,6 +245,7 @@ export type endGOMiddleware<
   TUser = unknown,
   TTenant = unknown,
   TSession = unknown,
+  TServices = Record<string, unknown>,
   TRouter = IRouter<any>,
   TResolver = PathResolver
 > = (
@@ -216,6 +256,7 @@ export type endGOMiddleware<
     TUser,
     TTenant,
     TSession,
+    TServices,
     TRouter,
     TResolver
   >,
@@ -232,6 +273,7 @@ export type endGOHandler<
   TUser = unknown,
   TTenant = unknown,
   TSession = unknown,
+  TServices = Record<string, unknown>,
   TRouter = IRouter<any>,
   TResolver = PathResolver
 > = (
@@ -242,10 +284,69 @@ export type endGOHandler<
     TUser,
     TTenant,
     TSession,
+    TServices,
     TRouter,
     TResolver
   >
 ) => Response | Promise<Response>;
+
+/**
+ * Custom 404 Not Found handler signature.
+ */
+export type NotFoundHandler<
+  TEnv = DefaultEnv,
+  TServices = Record<string, unknown>,
+  TUser = unknown,
+  TTenant = unknown,
+  TSession = unknown,
+  TRouter = IRouter<any>,
+  TResolver = PathResolver
+> = endGOHandler<
+  TEnv,
+  Record<string, string>,
+  Record<string, string>,
+  TUser,
+  TTenant,
+  TSession,
+  TServices,
+  TRouter,
+  TResolver
+>;
+
+/**
+ * Custom error handler signature invoked when middleware or handlers throw.
+ */
+export type ErrorHandler<
+  TEnv = DefaultEnv,
+  TServices = Record<string, unknown>,
+  TUser = unknown,
+  TTenant = unknown,
+  TSession = unknown,
+  TRouter = IRouter<any>,
+  TResolver = PathResolver
+> = (
+  error: unknown,
+  context: HandlerContext<
+    TEnv,
+    Record<string, string>,
+    Record<string, string>,
+    TUser,
+    TTenant,
+    TSession,
+    TServices,
+    TRouter,
+    TResolver
+  >
+) => Response | Promise<Response>;
+
+/**
+ * Sub-application or Web Standard fetch handler accepted by `app.mount()`.
+ */
+export type MountHandler =
+  | ((req: Request, env?: any, ctx?: any) => Response | Promise<Response>)
+  | {
+      fetch: (req: Request, env?: any, ctx?: any) => Response | Promise<Response>;
+    };
 
 /**
  * Standard HTTP verbs plus `ANY` catch-all verb key.
@@ -270,17 +371,38 @@ export type endGOActionMap<
   TUser = unknown,
   TTenant = unknown,
   TSession = unknown,
+  TServices = Record<string, unknown>,
   TRouter = IRouter<any>,
   TResolver = PathResolver
 > = Partial<
   Record<
     HttpVerb,
-    endGOHandler<TEnv, TParams, TQuery, TUser, TTenant, TSession, TRouter, TResolver>
+    endGOHandler<
+      TEnv,
+      TParams,
+      TQuery,
+      TUser,
+      TTenant,
+      TSession,
+      TServices,
+      TRouter,
+      TResolver
+    >
   >
 > &
   Record<
     string,
-    | endGOHandler<TEnv, TParams, TQuery, TUser, TTenant, TSession, TRouter, TResolver>
+    | endGOHandler<
+        TEnv,
+        TParams,
+        TQuery,
+        TUser,
+        TTenant,
+        TSession,
+        TServices,
+        TRouter,
+        TResolver
+      >
     | undefined
   >;
 
@@ -294,11 +416,32 @@ export type RoutePayload<
   TUser = unknown,
   TTenant = unknown,
   TSession = unknown,
+  TServices = Record<string, unknown>,
   TRouter = IRouter<any>,
   TResolver = PathResolver
 > =
-  | endGOHandler<TEnv, TParams, TQuery, TUser, TTenant, TSession, TRouter, TResolver>
-  | endGOActionMap<TEnv, TParams, TQuery, TUser, TTenant, TSession, TRouter, TResolver>;
+  | endGOHandler<
+      TEnv,
+      TParams,
+      TQuery,
+      TUser,
+      TTenant,
+      TSession,
+      TServices,
+      TRouter,
+      TResolver
+    >
+  | endGOActionMap<
+      TEnv,
+      TParams,
+      TQuery,
+      TUser,
+      TTenant,
+      TSession,
+      TServices,
+      TRouter,
+      TResolver
+    >;
 
 /**
  * Result returned by {@link IRouter.match}.
@@ -339,6 +482,7 @@ export interface MiddlewareEntry<
   TUser = unknown,
   TTenant = unknown,
   TSession = unknown,
+  TServices = Record<string, unknown>,
   TRouter = IRouter<any>,
   TResolver = PathResolver
 > {
@@ -350,6 +494,7 @@ export interface MiddlewareEntry<
     TUser,
     TTenant,
     TSession,
+    TServices,
     TRouter,
     TResolver
   >;
@@ -360,6 +505,7 @@ export interface MiddlewareEntry<
  */
 export interface ServerContext<
   TEnv = DefaultEnv,
+  TServices = Record<string, unknown>,
   TRouter = IRouter<any>,
   TResolver = PathResolver
 > {
@@ -370,7 +516,7 @@ export interface ServerContext<
   readonly router: TRouter;
   readonly resolver?: TResolver;
   readonly modules: Record<string, unknown>;
-  readonly services: Record<string, unknown>;
+  readonly services: TServices;
   readonly cache: Map<string, unknown>;
   readonly endpoints: readonly string[];
   readonly middleware: readonly MiddlewareEntry<
@@ -380,22 +526,43 @@ export interface ServerContext<
     any,
     any,
     any,
+    TServices,
     TRouter,
     TResolver
   >[];
 
   /** Registers an endpoint with a single handler or verb map. */
-  end(
-    path: string,
-    handler: RoutePayload<TEnv, any, any, any, any, any, TRouter, TResolver>
+  end<TPath extends string>(
+    path: TPath,
+    handler: RoutePayload<
+      TEnv,
+      ExtractParams<TPath>,
+      Record<string, string>,
+      any,
+      any,
+      any,
+      TServices,
+      TRouter,
+      TResolver
+    >
   ): void;
 
   /** Registers global or pattern-scoped middleware functions. */
   mid(
     patternOrMiddleware:
       | string
-      | endGOMiddleware<TEnv, any, any, any, any, any, TRouter, TResolver>,
-    ...middlewares: endGOMiddleware<TEnv, any, any, any, any, any, TRouter, TResolver>[]
+      | endGOMiddleware<TEnv, any, any, any, any, any, TServices, TRouter, TResolver>,
+    ...middlewares: endGOMiddleware<
+      TEnv,
+      any,
+      any,
+      any,
+      any,
+      any,
+      TServices,
+      TRouter,
+      TResolver
+    >[]
   ): void;
 
   /** Dynamically unregisters an endpoint path. */
@@ -414,11 +581,7 @@ export interface ServerContext<
   emit(event: endGOEventName, payload?: unknown): Promise<void>;
 
   /** Builds a standardized Web Response with JSON serialization and CORS headers. */
-  reply(
-    status: number,
-    payload?: unknown,
-    headers?: Record<string, string>
-  ): Response;
+  reply(status: number, payload?: unknown, headers?: ReplyHeaders): Response;
 }
 
 /**
@@ -426,6 +589,10 @@ export interface ServerContext<
  */
 export interface endGOOptions<
   TEnv = DefaultEnv,
+  TServices = Record<string, unknown>,
+  TUser = unknown,
+  TTenant = unknown,
+  TSession = unknown,
   TRouter extends IRouter<any> = IRouter<any>,
   TResolver extends PathResolver = PathResolver
 > {
@@ -435,5 +602,23 @@ export interface endGOOptions<
   config?: endGOConfig;
   logger?: endGOLogger;
   modules?: Record<string, unknown>;
-  services?: Record<string, unknown>;
+  services?: TServices;
+  onNotFound?: NotFoundHandler<
+    TEnv,
+    TServices,
+    TUser,
+    TTenant,
+    TSession,
+    TRouter,
+    TResolver
+  >;
+  onError?: ErrorHandler<
+    TEnv,
+    TServices,
+    TUser,
+    TTenant,
+    TSession,
+    TRouter,
+    TResolver
+  >;
 }

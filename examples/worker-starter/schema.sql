@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS items (
+  id TEXT PRIMARY KEY,
+  title TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+);

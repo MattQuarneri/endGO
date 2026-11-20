@@ -11,6 +11,10 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
+    "./middleware": {
+      "types": "./dist/builtins/index.d.ts",
+      "import": "./dist/builtins/index.js"
+    },
     "./routers": {
       "types": "./dist/routers/index.d.ts",
       "import": "./dist/routers/index.js"
@@ -41,7 +45,8 @@
     "check": "tsc -p tsconfig.json --noEmit",
     "dev:storage": "bun examples/portable-storage/local.ts",
     "smoke:package": "node examples/package-consumer/verify.mjs",
-    "test": "bun test"
+    "test": "bun test",
+    "test:worker": "npm --prefix platforms/cloudflare run test:worker"
   },
   "devDependencies": {
     "typescript": "^5.9.3"

@@ -1,5 +1,10 @@
 import type { endGOHandler, IRouter, RouteMatch } from '../types.js';
-import { normalizePath, resolveVerb, splitSegments } from './shared.js';
+import {
+  decodeParam,
+  normalizePath,
+  resolveVerb,
+  splitSegments,
+} from './shared.js';
 
 interface TrieRouteEntry<THandler> {
   path: string;
@@ -85,7 +90,7 @@ export class TrieRouter<THandler = endGOHandler<any>> implements IRouter<THandle
 
     const params: Record<string, string> = {};
     for (let i = 0; i < hit.route.paramNames.length; i++) {
-      params[hit.route.paramNames[i]] = hit.capturedParams[i];
+      params[hit.route.paramNames[i]] = decodeParam(hit.capturedParams[i]);
     }
     if (hit.wildcard !== null) {
       params['*'] = hit.wildcard;
